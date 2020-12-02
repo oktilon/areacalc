@@ -63,10 +63,25 @@ function bcatan($x) {
 }
 
 function bcatan2($y, $x) {
-    $add = bccomp($x, 0) < 0;
-    $ret = bcatan(bcdiv($y, $x));
-    if($add) {
-        $ret = bcadd($ret, PI);
+    $ret = 0;
+    $cx = bccomp($x, 0);
+    $cy = bccomp($y, 0);
+    if($cx > 0) {
+        $ret = bcatan(bcdiv($y, $x));
+    } elseif($cx < 0) {
+        $ret = bcatan(bcdiv($y, $x));
+        if($cy < 0) {
+            $ret = bcsub($ret, PI);
+        } else {
+            $ret = bcadd($ret, PI);
+        }
+    } else {
+        $pi2 = bcdiv(PI, '2');
+        if($cy < 0) {
+            $ret = bcsub('0', $pi2);
+        } elseif($cy > 0) {
+            $ret = $pi2;
+        }
     }
     return $ret;
 }
@@ -135,15 +150,15 @@ list($script, $fname) = $argv;
 
 bcscale(16);
 
-echo '  atan2( 0.1,  0.3) = ' .   atan2( 0.1,  0.3) . PHP_EOL;
-echo 'bcatan2( 0.1,  0.3) = ' . bcatan2( 0.1,  0.3) . PHP_EOL;
-echo '  atan2(-0.1,  0.3) = ' .   atan2(-0.1,  0.3) . PHP_EOL;
-echo 'bcatan2(-0.1,  0.3) = ' . bcatan2(-0.1,  0.3) . PHP_EOL;
-echo '  atan2( 0.1, -0.3) = ' .   atan2( 0.1, -0.3) . PHP_EOL;
-echo 'bcatan2( 0.1, -0.3) = ' . bcatan2( 0.1, -0.3) . PHP_EOL;
-echo '  atan2(-0.1, -0.3) = ' .   atan2(-0.1, -0.3) . PHP_EOL;
-echo 'bcatan2(-0.1, -0.3) = ' . bcatan2(-0.1, -0.3) . PHP_EOL;
-die();
+// echo '  atan2( 0.1,  0.3) = ' .   atan2( 0.1,  0.3) . PHP_EOL;
+// echo 'bcatan2( 0.1,  0.3) = ' . bcatan2( 0.1,  0.3) . PHP_EOL;
+// echo '  atan2(-0.1,  0.3) = ' .   atan2(-0.1,  0.3) . PHP_EOL;
+// echo 'bcatan2(-0.1,  0.3) = ' . bcatan2(-0.1,  0.3) . PHP_EOL;
+// echo '  atan2( 0.1, -0.3) = ' .   atan2( 0.1, -0.3) . PHP_EOL;
+// echo 'bcatan2( 0.1, -0.3) = ' . bcatan2( 0.1, -0.3) . PHP_EOL;
+// echo '  atan2(-0.1, -0.3) = ' .   atan2(-0.1, -0.3) . PHP_EOL;
+// echo 'bcatan2(-0.1, -0.3) = ' . bcatan2(-0.1, -0.3) . PHP_EOL;
+// die();
 
 $a = '6378137';  //# большая полуось
 $f = bcdiv('1', '298.257223563'); //# сжатие
