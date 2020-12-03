@@ -86,6 +86,35 @@ function bcatan2($y, $x) {
     return $ret;
 }
 
+function bcceil($number)
+{
+    if (strpos($number, '.') !== false) {
+        if (preg_match("~\.[0]+$~", $number)) return bcround($number, 0);
+        if ($number[0] != '-') return bcadd($number, 1, 0);
+        return bcsub($number, 0, 0);
+    }
+    return $number;
+}
+
+function bcfloor($number)
+{
+    if (strpos($number, '.') !== false) {
+        if (preg_match("~\.[0]+$~", $number)) return bcround($number, 0);
+        if ($number[0] != '-') return bcadd($number, 0, 0);
+        return bcsub($number, 1, 0);
+    }
+    return $number;
+}
+
+function bcround($number, $precision = 0)
+{
+    if (strpos($number, '.') !== false) {
+        if ($number[0] != '-') return bcadd($number, '0.' . str_repeat('0', $precision) . '5', $precision);
+        return bcsub($number, '0.' . str_repeat('0', $precision) . '5', $precision);
+    }
+    return $number;
+}
+
 // степенной ряд
 function powSeries($x, $p1, $p2, $p3) {
     return bcmul(bcadd($p1, bcmul(bcadd($p2, bcmul($p3, $x)), $x)), $x);
@@ -167,6 +196,19 @@ $f = bcdiv('1', '298.257223563'); //# сжатие
 list($r_auth, $to_auth_2, $to_auth_4, $to_auth_6) = init($a, $f);
 printf("SPH R=%s, a2=%s, a4=%s, a6=%s\n", $r_auth, $to_auth_2, $to_auth_4, $to_auth_6);
 
+$lon1 = bcdeg2rad('37.70519231160482');
+$lat1 = bcdeg2rad('49.98347148895264');
+$lat1 = trigSeries($lat1, $to_auth_2, $to_auth_4, $to_auth_6);
+
+$lon = bcdeg2rad('37.70525932312012');
+$lat = bcdeg2rad('49.98350200653076');
+$lat = trigSeries($lat, $to_auth_2, $to_auth_4, $to_auth_6);
+
+list($dist, $azi1) = inverse($lat1, $lon1, $lat, $lon);
+echo "AZ=$azi1\n";
+die();
+
+
 $fp = fopen($fname, 'r');
 $tau = 0.;
 $i = 1;
@@ -194,9 +236,7 @@ while(($line = fgets($fp)) !== FALSE) {
             # вычислить поворот в i-й вершине
             $tau_i = bcsub('0.5', bcdiv(bcdiv(bcsub($azi2, $azi1), '2.0'), PI));
             # нормализовать величину поворота
-            $dt = bcadd($tau_i, '0.5');
-            $dt = explode('.', $dt);
-            $tau_i = bcsub($tau_i, $dt[0]);
+            $tau_i = bcsub($tau_i, bcfloor(bcadd($tau_i, '0.5')));
             # добавить поворот к сумме поворотов
             $tau = bcadd($tau, $tau_i);
         }
@@ -205,8 +245,8 @@ while(($line = fgets($fp)) !== FALSE) {
     }
     $lon1 = $lon;
     $lat1 = $lat;
-    printf("%03d=%s %s, r=%s %s, l=%s, t=%s, a0=%s, a1=%s, a2=%s\n",
-            $i, $alon, $alat, $lonx, $latx, $lat, $tau, $azi0, $azi1, $azi2);
+    printf("%03d=%s %s, r=%s %s, l=%s, t=%s, a1=%s, a2=%s\n",
+            $i, $alon, $alat, $lonx, $latx, $lat, $tau, $azi1, $azi2);
     $i++;
 }
 fclose($fp);
@@ -214,7 +254,7 @@ fclose($fp);
 # вычислить поворот в 1-й вершине
 $tau_i = bcsub('0.5', bcdiv(bcdiv(bcsub($azi2, $azi0), '2.0'), PI));
 # нормализовать величину поворота
-$tau_i = bcsub($tau_i, floor(bcadd($tau_i, '0.5')));
+$tau_i = bcsub($tau_i, bcfloor(bcadd($tau_i, '0.5')));
 # добавить поворот к сумме поворотов
 $tau = bcadd($tau, $tau_i);
 

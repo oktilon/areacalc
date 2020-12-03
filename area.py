@@ -10,11 +10,10 @@ script, fname = argv
 
 a, f = 6378137, 1./298.257223563 # большая полуось и сжатие
 
-print "atan2(10,12)   = %.16f" %(math.atan2(10, 12))
-print "atan2(-10,12)   = %.16f" %(math.atan2(-10, 12))
-print "atan2(10,-12)   = %.16f" %(math.atan2(10, -12))
-print "atan2(-10,-12)   = %.16f" %(math.atan2(-10, -12))
-exit
+# print "atan2(10,12)   = %.16f" %(math.atan2(10, 12))
+# print "atan2(-10,12)   = %.16f" %(math.atan2(-10, 12))
+# print "atan2(10,-12)   = %.16f" %(math.atan2(10, -12))
+# print "atan2(-10,-12)   = %.16f" %(math.atan2(-10, -12))
 
 
 # инициализировать эквивалентную сферу
