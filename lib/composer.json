@@ -1,0 +1,5 @@
+{
+    "require": {
+        "spinen/laravel-geometry": "^2.3"
+    }
+}
